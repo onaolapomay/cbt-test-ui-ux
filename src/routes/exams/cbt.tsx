@@ -2,8 +2,8 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
 import { Drawer } from 'vaul'
 
-export const Route = createFileRoute('/')({
-  component: CBTExamPage,
+export const Route = createFileRoute('/exams/cbt')({
+  component: CBTExamPage as any,
 })
 
 interface Question {
@@ -15,12 +15,12 @@ interface Question {
 
 const MOCK_QUESTIONS: Question[] = Array.from({ length: 40 }, (_, index) => ({
   id: index + 1,
-  text: `Question ${index + 1}: What is the primary output of executing a standard database migration using Drizzle Kit in a modern full-stack web application?`,
+  text: `Question ${index + 1}: What is a noun?`,
   options: [
-    'Compiles TypeScript directly into binary executable machine code',
-    'Generates and executes SQL migration statements against the target database schema',
-    'Automatically provisions a remote cloud server instance on Netlify',
-    'Purges all browser local storage and resets environment variables',
+    'A definition',
+    'A name of time',
+    'A name of person, animal, place or things',
+    'An action word',
   ],
   correctAnswer: 1,
 }))
@@ -29,10 +29,10 @@ function CBTExamPage() {
   const [activeSubject, setActiveSubject] = useState('Mathematics')
   const [currentIndex, setCurrentIndex] = useState(0)
   const [answers, setAnswers] = useState<Record<number, number>>({})
-  const [flagged, setFlagged] = useState<Record<number, boolean>>({})
+//   const [flagged, setFlagged] = useState<Record<number, boolean>>({})
   const [timeLeft, setTimeLeft] = useState(3600)
   const [isCalculatorOpen, setIsCalculatorOpen] = useState(false)
-  const [isQuitModalOpen, setIsQuitModalOpen] = useState(false)
+  const [modalType, setModalType] = useState<'none' | 'quit' | 'submit'>('none')
   const [calcInput, setCalcInput] = useState('0')
 
   useEffect(() => {
@@ -52,9 +52,9 @@ function CBTExamPage() {
     setAnswers((prev) => ({ ...prev, [questionId]: optionIndex }))
   }
 
-  const toggleFlag = (questionId: number) => {
-    setFlagged((prev) => ({ ...prev, [questionId]: !prev[questionId] }))
-  }
+//   const toggleFlag = (questionId: number) => {
+//     setFlagged((prev) => ({ ...prev, [questionId]: !prev[questionId] }))
+//   }
 
   const currentQuestion = MOCK_QUESTIONS[currentIndex]
   const unansweredCount = MOCK_QUESTIONS.length - Object.keys(answers).length
@@ -74,7 +74,7 @@ function CBTExamPage() {
   }
 
   return (
-    <div className="flex flex-col w-full h-[100dvh] bg-zinc-900 text-zinc-100 overflow-hidden relative font-sans">
+    <div className="flex flex-col w-full h-dvh bg-zinc-900 text-zinc-100 overflow-hidden relative font-sans">
       <header className="flex flex-col border-b border-zinc-800 bg-zinc-900 shrink-0 z-10">
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-2">
@@ -88,12 +88,18 @@ function CBTExamPage() {
               🧮 Calc
             </button>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <button
-              onClick={() => setIsQuitModalOpen(true)}
-              className="px-3 py-1 text-xs font-bold text-rose-400 hover:bg-rose-950/40 rounded border border-rose-900/60 transition"
+              onClick={() => setModalType('quit')}
+              className="px-3 py-1 text-xs font-bold text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 rounded border border-zinc-700 transition"
             >
-              Quit / Submit
+              Quit
+            </button>
+            <button
+              onClick={() => setModalType('submit')}
+              className="px-3 py-1 text-xs font-bold text-emerald-400 hover:bg-emerald-950/40 rounded border border-emerald-800/60 transition"
+            >
+              Submit Exam
             </button>
           </div>
         </div>
@@ -138,27 +144,36 @@ function CBTExamPage() {
         </div>
       )}
 
-      {isQuitModalOpen && (
+      {modalType !== 'none' && (
         <div className="absolute inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-zinc-900 border border-zinc-700 p-6 rounded-2xl max-w-sm w-full shadow-2xl space-y-4">
-            <h3 className="text-sm font-bold tracking-wide uppercase text-zinc-200">Confirm Exam Exit</h3>
+            <h3 className="text-sm font-bold tracking-wide uppercase text-zinc-200">
+              {modalType === 'quit' ? 'Confirm Quit' : 'Confirm Submission'}
+            </h3>
             <p className="text-xs text-zinc-300 leading-relaxed">
-              {unansweredCount > 0
-                ? `You have ${unansweredCount} unanswered question(s). Are you sure you want to quit and submit your exam?`
-                : 'You have answered all questions. Are you ready to quit and submit?'}
+              {modalType === 'quit'
+                ? `You have ${unansweredCount} unanswered question(s). Are you sure you want to quit the exam session? Your progress will be discarded.`
+                : unansweredCount > 0
+                ? `You still have ${unansweredCount} unanswered question(s). Are you sure you want to submit your exam now?`
+                : 'You have answered all questions. Are you ready to finalise and submit your exam?'}
             </p>
             <div className="flex gap-3 pt-2">
               <button
-                onClick={() => setIsQuitModalOpen(false)}
+                onClick={() => setModalType('none')}
                 className="flex-1 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold rounded-xl transition"
               >
-                Resume Exam
+                Cancel
               </button>
               <button
-                onClick={() => alert('Exam submitted successfully!')}
-                className="flex-1 py-2.5 bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold rounded-xl transition shadow-md"
+                onClick={() => {
+                  alert(modalType === 'quit' ? 'Exam session quit.' : 'Exam submitted successfully!')
+                  setModalType('none')
+                }}
+                className={`flex-1 py-2.5 text-white text-xs font-bold rounded-xl transition shadow-md ${
+                  modalType === 'quit' ? 'bg-rose-600 hover:bg-rose-500' : 'bg-emerald-600 hover:bg-emerald-500'
+                }`}
               >
-                Yes, Quit
+                {modalType === 'quit' ? 'Yes, Quit' : 'Yes, Submit'}
               </button>
             </div>
           </div>
@@ -170,7 +185,7 @@ function CBTExamPage() {
           <span className="text-xs tracking-wider uppercase font-bold text-zinc-400">
             {activeSubject} — Question {currentQuestion.id} of 40
           </span>
-          <button
+          {/* <button
             onClick={() => toggleFlag(currentQuestion.id)}
             className={`text-xs px-3 py-1.5 rounded-md font-medium border transition ${
               flagged[currentQuestion.id]
@@ -179,14 +194,14 @@ function CBTExamPage() {
             }`}
           >
             {flagged[currentQuestion.id] ? 'Flagged 🚩' : 'Flag Question'}
-          </button>
+          </button> */}
         </div>
 
         <p className="text-sm font-medium leading-relaxed text-zinc-100 bg-zinc-950/40 p-4 rounded-xl border border-zinc-800/80 shadow-inner">
           {currentQuestion.text}
         </p>
 
-        <div className="space-y-3 pb-4">
+        <div className="space-y-6 pb-6">
           {currentQuestion.options.map((opt, idx) => {
             const isSelected = answers[currentQuestion.id] === idx
             return (
@@ -213,7 +228,7 @@ function CBTExamPage() {
         </div>
       </main>
 
-      <footer className="p-3.5 border-t border-zinc-800 bg-zinc-900 flex items-center justify-between gap-2.5 shrink-0 shadow-lg w-full z-20">
+      <footer className="p-3.5 border-t border-zinc-800 bg-zinc-900 flex items-center justify-between gap-2.5 shrink-0 shadow-lg w-full z-25">
         <button
           disabled={currentIndex === 0}
           onClick={() => setCurrentIndex((prev) => Math.max(0, prev - 1))}
@@ -234,7 +249,7 @@ function CBTExamPage() {
               <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-zinc-700 my-3" />
               <div className="px-5 pb-3 border-b border-zinc-800 flex justify-between items-center">
                 <div>
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-200">Question list</h3>
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-200">Question Palette</h3>
                   <p className="text-[10px] text-zinc-400 mt-0.5">Answered vs Unanswered Overview</p>
                 </div>
                 <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950 px-2 py-1 rounded border border-emerald-800">
@@ -258,9 +273,9 @@ function CBTExamPage() {
                       } ${isCurrent ? 'ring-2 ring-emerald-500 ring-offset-2 ring-offset-zinc-900' : ''}`}
                     >
                       {q.id}
-                      {flagged[q.id] && (
+                      {/* {flagged[q.id] && (
                         <span className="absolute top-1 right-1 w-2 h-2 bg-amber-500 rounded-full ring-1 ring-zinc-900" />
-                      )}
+                      )} */}
                     </button>
                   )
                 })}
