@@ -72,8 +72,10 @@ function CBTExamPage() {
 
   return (
     <div className="flex justify-center bg-zinc-950 min-h-screen text-zinc-100">
-      <div className="w-full max-w-md flex flex-col h-screen bg-zinc-900 border-x border-zinc-800 relative shadow-2xl">
-        <header className="flex items-center justify-between px-4 py-3.5 border-b border-zinc-800 bg-zinc-900">
+      <div className="w-full max-w-md flex flex-col h-screen bg-zinc-900 border-x border-zinc-800 relative shadow-2xl overflow-hidden">
+        
+        {/* Header - Fixed */}
+        <header className="flex items-center justify-between px-4 py-3.5 border-b border-zinc-800 bg-zinc-900 shrink-0 z-10">
           <div className="flex items-center gap-2">
             <span className="font-mono text-xs font-bold text-emerald-400 bg-emerald-950/80 px-2.5 py-1 rounded border border-emerald-800/60">
               ⏱ {formatTime(timeLeft)}
@@ -92,8 +94,9 @@ function CBTExamPage() {
           </div>
         </header>
 
+        {/* Calculator Modal Overlay */}
         {isCalculatorOpen && (
-          <div className="absolute top-16 left-4 right-4 z-20 bg-zinc-900 border border-zinc-700 p-4 rounded-xl shadow-2xl">
+          <div className="absolute top-16 left-4 right-4 z-30 bg-zinc-900 border border-zinc-700 p-4 rounded-xl shadow-2xl">
             <div className="flex justify-between items-center mb-2">
               <span className="text-xs font-bold text-zinc-400">EXAM CALCULATOR</span>
               <button onClick={() => setIsCalculatorOpen(false)} className="text-xs text-rose-400 hover:underline">Close</button>
@@ -115,6 +118,7 @@ function CBTExamPage() {
           </div>
         )}
 
+        {/* Main Scrolling Container */}
         <main className="flex-1 overflow-y-auto p-5 space-y-6">
           <div className="flex items-center justify-between">
             <span className="text-xs tracking-wider uppercase font-bold text-zinc-400">
@@ -136,7 +140,7 @@ function CBTExamPage() {
             {currentQuestion.text}
           </p>
 
-          <div className="space-y-3">
+          <div className="space-y-3 pb-4">
             {currentQuestion.options.map((opt, idx) => {
               const isSelected = answers[currentQuestion.id] === idx
               return (
@@ -161,7 +165,8 @@ function CBTExamPage() {
           </div>
         </main>
 
-        <footer className="p-4 border-t border-zinc-800 bg-zinc-900 flex items-center justify-between gap-3">
+        {/* Footer Navbar - Pinned to Bottom */}
+        <footer className="p-3.5 border-t border-zinc-800 bg-zinc-900 flex items-center justify-between gap-2.5 shrink-0 sticky bottom-0 z-20 shadow-lg">
           <button
             disabled={currentIndex === 0}
             onClick={() => setCurrentIndex((prev) => Math.max(0, prev - 1))}
@@ -172,8 +177,8 @@ function CBTExamPage() {
 
           <Drawer.Root>
             <Drawer.Trigger asChild>
-              <button className="px-4 py-2.5 bg-zinc-100 hover:bg-white active:bg-zinc-200 text-zinc-950 rounded-xl text-xs font-bold shadow-lg transition">
-                Questions Grid
+              <button className="px-3.5 py-2.5 bg-zinc-100 hover:bg-white active:bg-zinc-200 text-zinc-950 rounded-xl text-xs font-bold shadow-md transition whitespace-nowrap">
+                Grid ({Object.keys(answers).length}/40)
               </button>
             </Drawer.Trigger>
             <Drawer.Portal>
@@ -225,6 +230,7 @@ function CBTExamPage() {
             Next
           </button>
         </footer>
+
       </div>
     </div>
   )
