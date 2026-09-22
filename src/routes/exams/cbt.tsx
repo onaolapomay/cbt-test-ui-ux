@@ -71,7 +71,7 @@ function CBTExamPage() {
   }
 
   return (
-    <div className="flex flex-col w-full min-h-screen bg-zinc-900 text-zinc-100 overflow-hidden relative">
+    <div className="flex flex-col w-full h-screen bg-zinc-900 text-zinc-100 overflow-hidden relative">
       <header className="flex items-center justify-between px-4 py-3.5 border-b border-zinc-800 bg-zinc-900 shrink-0 z-10">
         <div className="flex items-center gap-2">
           <span className="font-mono text-xs font-bold text-emerald-400 bg-emerald-950/80 px-2.5 py-1 rounded border border-emerald-800/60">
