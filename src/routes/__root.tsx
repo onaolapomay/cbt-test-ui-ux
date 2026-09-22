@@ -14,27 +14,16 @@ export const Route = createRootRoute({
     links: [{ rel: 'stylesheet', href: appCss }],
   }),
   shellComponent: RootDocument,
-  notFoundComponent: () => (
-    <div className="flex h-screen w-full items-center justify-center bg-slate-950 text-slate-100 p-4">
-      <div className="text-center space-y-2">
-        <h1 className="text-lg font-bold">Page Not Found</h1>
-        <p className="text-xs text-slate-400">The route you are looking for does not exist.</p>
-        <a href="/exams/cbt" className="inline-block mt-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-xs font-semibold transition">
-          Go to CBT Exam
-        </a>
-      </div>
-    </div>
-  ),
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className="h-full overflow-hidden">
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <HeadContent />
       </head>
-      <body className="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-50 antialiased">
+      <body className="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-50 antialiased h-full overflow-hidden m-0">
         {children}
         <Outlet />
         <TanStackDevtools />
